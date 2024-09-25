@@ -245,8 +245,13 @@ void Server::close_socket(int socketFD,const string &socketPath) {
         cerr << "Error closing socket: " << strerror(errno) << endl;
         exit(EXIT_FAILURE);
     }
-    if (unlink(socketPath.c_str()) == -1) {
-        cerr << "Error unlinking socket: " << strerror(errno) << endl;
+    // if not already unlinked, do it now
+    if (access(socketPath.c_str(), F_OK) == 0) {
+        if (unlink(socketPath.c_str()) == -1) {
+            cerr << "Error unlinking socket: " << strerror(errno) << endl;
+        }
+    } else {
+        cout << "Socket file does not exist, no need to unlink." << endl;
     }
     cout << "Socket closed succesfully" << endl;
 }
